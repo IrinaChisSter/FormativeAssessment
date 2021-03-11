@@ -1,0 +1,210 @@
+---
+title: "Formative Assessment"
+author: "Dr Irina Chis Ster"
+date: "06/03/2021"
+output:
+  html_notebook:  
+    df_print: paged
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# The aim of the formative assessment
+
+The aim of this formative assessment is to prepare you for the exam
+associated with this module - Population Health Research.
+
+On this occasion, the data for analyses are similar for all of you.
+However, for the formal exam, you will receive different data sets yet
+of similar complexity.
+
+This assessment is not formally marked. Nevertheless, if you addressed
+it carefully, it would drive you through almost all concepts presented
+so far in the lectures as well as through the R procedures which used to
+explore them.
+
+As for the meaning of the variables, the information is minimal but
+please feel free to look up for more details.
+
+## The data set:
+
+These data are courtesy of Dr John Schorling, Department of Medicine,
+University of Virginia School of Medicine. The data are simplified and
+consist of 17 variables (some derived for the purpose of this
+assessment) on 375 subjects from 1046 subjects who were interviewed in a
+study to understand the prevalence of obesity, diabetes, and other
+cardiovascular risk factors in central Virginia for African Americans.
+The variables in the data are listed below:
+
+-   Id:Subject id
+
+-   Chol: **Cholesterol** is a waxy substance found in the blood. Our
+    body needs **cholesterol** to build healthy cells, but high levels
+    of **cholesterol** can increase your risk of heart disease or leads
+    to the development of fatty deposits in the blood vessels.
+
+-   glu: **Glucose** is the main type of sugar in the blood and is the
+    major source of energy for the body's cells. **Glucose** comes from
+    the foods we eat or the body can make it from other substances.
+
+-   hdl: High density lipoprotein (HDL) stands for ***high***-***density
+    lipoproteins***. It is sometimes called the "good" ***cholesterol***
+    because it carries ***cholesterol*** from other parts of your body
+    back to your liver. Your liver then removes the ***cholesterol***
+    from your body.
+
+-   ratio: Cholesterol/hdl ratio
+
+-   glyhb: Glycosylated hemoglobin (HbA1c) test is an important blood
+    test that determine how well you are managing your diabetes.
+    Hemoglobin is a substance in red blood cells that carries oxygen to
+    tissues. It can also attach to sugar in the blood, forming a
+    substance called glycated hemoglobin, or Hemoglobin A1C. The test
+    provides an average blood sugar measurement over a 6- to 12-week
+    period and is used in conjunction with home glucose monitoring to
+    make treatment adjustments.
+
+-   location: A factor with levels Buckingham and Louisa - the
+    geographical location of the participants
+
+-   age: Age (years)
+
+-   gender: Gender, male or female
+
+-   bp1s: Systolic blood pressure
+
+-   bp1d: Diastolic blood pressure
+
+-   timeppn: Postprandial time when labs were drawn in minutes = This
+    test is done to see how your body responds to sugar and starch after
+    you eat a meal. Within two hours of eating, your insulin and blood
+    glucose levels should return to normal.
+
+-   timeppn_cat: a variable derived from the above with
+
+    -   1 indicating insulin and blood glucose levels return to normal
+        within 1 hour
+
+    -   2 indicating insulin and blood glucose levels return to normal
+        between 1 -2 hrs
+
+    -   3 indicating insulin and blood glucose levels return to normal
+        between 2 -3 hrs
+
+    -   4 indicating insulin and blood glucose levels return to normal
+        between 3 -4 hrs
+
+    -   5 indicating insulin and blood glucose levels return to normal
+        after more than 4 hrs
+
+-   bmi: body mass index - continuous variable =the ratio between weight
+    (kg) and height^2^ (height in cm)
+
+-   bmi_binary: 1 indicates obese, 0 not obese according to a blood test
+
+-   bmi_cat indicating:
+
+    -   1 normal or underweight (collapsed together as there were very
+        few underweight)
+
+    -   2 overweight (\<=25\<bmi\<30)
+
+    -   3 obese (\<=30bmi\<40)
+
+    -   4 excessively obese (bmi\>=40)
+
+-   whr: Waist to hip ratio
+
+There are 3 statistical outcomes of interest - all representing BMI
+measurements: **bmi (continuous)**, **bmi_binary** and **bmi_cat
+(ordinal/categorical)**. Please consider the rest of the variables as
+independent. They may or may not be associated with the different types
+of outcomes (bmi). The assignment requires you exactly that: to explore
+and interpret the variability in these 3 outcomes using the available
+potential explanatory variables and appropriate techniques as taught
+throughout the module so far.
+
+## Start the assignment:
+
+-   Please run all the Miscellaneous R script v6 which should be in the
+    Formative assessment folder.
+-   Please do not stuck on any technicalities which you may encounter -
+    feel free to email me.
+
+### Please read the data in R in the chunk below
+
+```{r}
+ 
+```
+
+### 1. Please make a summary of all the variables in the data recognizing their statistical type (1p)
+
+#### Overall (0.33p)
+
+```{r}
+ 
+```
+
+#### By BMI-binary (0.33p)
+
+```{r}
+ 
+```
+
+#### By BMI- as nominal data (summary by each category) (0.33p)
+
+```{r}
+ 
+```
+
+### 2. Please explore graphically potential relationships between the outcomes and each independent (potential explanatory) variable as you think appropriate. For a full mark you need to produce at least three relevant graphs for each outcome corresponding to a continuous and a categorical/binary independent variable. Please feel free to create more chunks for code (1p).
+
+#### BMI as continuous outcome (0.33p)
+
+```{r}
+ 
+```
+
+#### BMI as binary outcome (0.33p)
+
+```{r}
+ 
+```
+
+#### BMI as ordinal outcome (0.33p)
+
+```{r}
+ 
+```
+
+### 3. Please investigate the univariate associations between the outcomes and each potential explanatory variable. Please create you own chunks - the advise is to keep them small (3p).
+
+Please indicate the measure of association between the outcome and the
+explanatory variable for each outcome type and write down the hypothesis
+testing setting for each association (3×0.5p).
+
+Please indicate the p-value associated and the uncertainty of the
+estimates which measure each association and **interpret** the findings
+(3×0.5p).
+
+### 
+
+### 4. Please use age, gender, cholesterol levels, waist/hip ratio, diastolic and systolic blood pressure to construct a multivariable model for each outcome (5p)
+
+Please conduct model diagnosis assessment and indicate the goodness of
+fit for the models in each case (3×0.5p).
+
+Please select the best statistical model using methods presented in the
+lectures and comment on your choice (3×0.5p).
+
+Please choose a simple model with two predictors, one continuous
+variable and one categorical/binary and produce and visualize
+predictions from this model (3×0.5p).
+
+Please comment on the consistency of the findings and indicate which
+outcome would you choose in practice and why (1p).
