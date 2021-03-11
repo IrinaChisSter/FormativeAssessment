@@ -129,14 +129,16 @@ and interpret the variability in these 3 outcomes using the available
 potential explanatory variables and appropriate techniques as taught
 throughout the module so far.
 
-## Start the assignment:
+## At the start of the assignment:
 
--   Please run all the Miscellaneous R script v6 which should be in the
+-   Please run the Miscellaneous R script v6 which should be in the
     Formative assessment folder.
 -   Please do not stuck on any technicalities which you may encounter -
     feel free to email me.
 
-### Please read the data in R in the chunk below
+## Please read the data in R in the chunk below 
+
+(DiabetesDataModified.txt is a tab separated text file)
 
 ```{r}
  
