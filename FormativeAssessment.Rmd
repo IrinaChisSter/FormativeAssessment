@@ -141,7 +141,10 @@ throughout the module so far.
 (DiabetesDataModified.txt is a tab separated text file)
 
 ```{r}
- 
+##reading the data in
+mydata <-read.table("DiabetesDataModified.txt", header=T, sep="\t")
+names(mydata)
+dim(mydata)
 ```
 
 ### 1. Please make a summary of all the variables in the data recognizing their statistical type (1p)
@@ -149,18 +152,25 @@ throughout the module so far.
 #### Overall (0.33p)
 
 ```{r}
- 
+summary(mydata) 
 ```
 
 #### By BMI-binary (0.33p)
 
 ```{r}
- 
+##ANOVA lecture contains the command!
+## summarize the data
+by(mydata, mydata$bmi_binary, summary)
+
 ```
 
 #### By BMI- as nominal data (summary by each category) (0.33p)
 
 ```{r}
+##ANOVA lecture contains the command!
+## summarize the data
+by(mydata, mydata$bmi_cat, summary)
+
  
 ```
 
@@ -169,19 +179,72 @@ throughout the module so far.
 #### BMI as continuous outcome (0.33p)
 
 ```{r}
+mydata$location
+tabulate(mydata$location)
+
+ggplot(mydata, aes(x=location, y=bmi, fill=location)) + geom_boxplot()+
+      scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9"))+
+      scale_x_discrete(limits=c("Buckingham", "Louisa"))+
+      labs(title = "BMI by location", 
+      y = "BMI", x="BMI  ") 
  
 ```
 
 #### BMI as binary outcome (0.33p)
 
 ```{r}
+table(mydata$bmi_binary) ##0=male, 1=female
+table(mydata$location) ## 0/1= alive/dead
+
+
+mytable<-table(mydata$bmi_binary, mydata$location)
+mytable
+
+margin.table(mytable, 1) # A frequencies (summed over B)
+margin.table(mytable, 2) # B frequencies (summed over A)
+prop.table(mytable) # cell percentages - joint distribution
+prop.table(mytable, 1) # row percentages
+prop.table(mytable, 2) # column percentages
+
+tb.prop<-prop.table(mytable, 1) # row percentages
+tb.prop
+tb.df <- as.data.frame(tb.prop)
+tb.df
+names(tb.df) <- c("BMIcategory", "Location", "Frequency")
+names(tb.df)
+
+
+ggplot(tb.df, aes(x=BMIcategory, y=Frequency, fill=Location)) + geom_col()
  
 ```
 
 #### BMI as ordinal outcome (0.33p)
 
 ```{r}
- 
+table(mydata$bmi_binary) ##0=male, 1=female
+table(mydata$location) ## 0/1= alive/dead
+
+
+mytable<-table(mydata$bmi_cat, mydata$location)
+mytable
+
+margin.table(mytable, 1) # A frequencies (summed over B)
+margin.table(mytable, 2) # B frequencies (summed over A)
+prop.table(mytable) # cell percentages - joint distribution
+prop.table(mytable, 1) # row percentages
+prop.table(mytable, 2) # column percentages
+
+tb.prop<-prop.table(mytable, 1) # row percentages
+tb.prop
+tb.df <- as.data.frame(tb.prop)
+tb.df
+names(tb.df) <- c("BMIcategory", "Location", "Frequency")
+names(tb.df)
+
+
+ggplot(tb.df, aes(x=BMIcategory, y=Frequency, fill=Location)) + geom_col()
+
+ggplot(tb.df, aes(x=BMIcategory, y=Frequency, fill=Location)) + geom_col(position="dodge")
 ```
 
 ### 3. Please investigate the univariate associations between the outcomes and each potential explanatory variable. Please create you own chunks - the advise is to keep them small (3p).
@@ -194,7 +257,6 @@ Please indicate the p-value associated and the uncertainty of the
 estimates which measure each association and **interpret** the findings
 (3×0.5p).
 
-### 
 
 ### 4. Please use age, gender, cholesterol levels, waist/hip ratio, diastolic and systolic blood pressure to construct a multivariable model for each outcome (5p)
 
@@ -208,5 +270,220 @@ Please choose a simple model with two predictors, one continuous
 variable and one categorical/binary and produce and visualize
 predictions from this model (3×0.5p).
 
+## BMI -continuous outcome
+
+```{r}
+mydata$timeppn_cat<-as.factor(mydata$gender)
+is.factor(mydata$gender)
+
+
+reg_model1<-lm(formula = mydata$bmi~mydata$age+mydata$gender+mydata$chol +mydata$whr+mydata$bp1s +mydata$bp1d,
+               data = mydata)
+summary(reg_model1)
+
+
+reg_model2<-lm(formula = mydata$bmi~mydata$age+mydata$gender+mydata$chol +mydata$whr+mydata$bp1d  ,
+               data = mydata)
+summary(reg_model2)
+
+
+reg_model3<-lm(formula = mydata$bmi~mydata$age+mydata$gender+mydata$whr+mydata$bp1d  ,
+               data = mydata)
+summary(reg_model3)
+
+
+reg_model4<-lm(formula = mydata$bmi~ mydata$gender+mydata$whr+mydata$bp1d  ,
+               data = mydata)
+summary(reg_model4)
+
+lrtest(reg_model1, reg_model2, reg_model3, reg_model4)
+
+confint(reg_model4)
+
+```
+
+
+```{r}
+##checking assumptions -all 4
+
+par(mfrow=c(2,2))
+plot(reg_model4)
+par(mfrow=c(1,1))
+
+##Cook's distance points
+
+cutoff <-4/(nrow(mydata))
+cutoff
+plot(reg_model4, which=4, cook.levels=cutoff)
+```
+
+
+
+```{r}
+reg_model4<-lm(formula = mydata$bmi~ mydata$gender+mydata$whr+mydata$bp1d  ,
+               data = mydata)
+summary(reg_model4)
+confint(reg_model4)
+```
+
+```{r}
+summary(mydata$whr)
+summary(mydata$bp1d)
+
+mydata$whr_center<-mydata$whr-0.88
+mydata$bp1d_center<-mydata$bp1d -83.38
+
+reg_model5<-lm(formula = mydata$bmi~ mydata$gender+mydata$whr_center+mydata$bp1d_center  ,
+               data = mydata)
+summary(reg_model5)
+confint(reg_model5)
+
+```
+
+Interpretation: The intercept is meaningful and represents the mean BMI  in females (the baseline of the categorical variable) for the mean values of whr and bd1d.
+20.03 = The adjusted (for gender and bd1d) increase in BMI for one unit increase in whr 
+0.08  = The adjusted (for gender and whr) increase in BMI for one unit increase in bd1d
+
+## BMI binary
+
+```{r}
+
+logitreg_model1<-glm(mydata$bmi_binary~mydata$age+mydata$gender+mydata$chol +mydata$whr+ mydata$bp1s +mydata$bp1d,
+               family = "binomial")
+summary(logitreg_model1)
+
+
+logitreg_model2<-glm(formula = mydata$bmi_binary~mydata$age+mydata$gender+mydata$chol +mydata$whr+ mydata$bp1s,
+               family = "binomial")
+summary(logitreg_model2)
+
+
+logitreg_model3<-glm(formula = mydata$bmi_binary~mydata$age +mydata$chol +mydata$whr +mydata$bp1s,
+              family = "binomial")
+summary(logitreg_model3)
+
+
+logitreg_model4<-glm(formula = mydata$bmi_binary~mydata$age +mydata$chol +mydata$whr ,
+              family = "binomial")
+summary(logitreg_model4)
+
+lrtest(logitreg_model1,logitreg_model2,logitreg_model3,logitreg_model4)
+
+confint(logitreg_model4)
+
+```
+
+
+
+```{r}
+summary(mydata$age)
+summary(mydata$chol)
+summary(mydata$whr)
+ 
+
+mydata$age_center<-mydata$age -47
+mydata$chol_center<-mydata$chol -207.6
+mydata$whr_center<-(mydata$whr-0.88)/0.10 ## that is because 1 unit increase in this ratio is a lot
+
+logitreg_model5<-glm(formula = mydata$bmi_binary~mydata$age_center +mydata$chol_center +mydata$whr_center ,
+              family = "binomial")
+summary(logitreg_model5)
+
+##Hosmer-Lemeshow 
+logitgof(mydata$bmi_binary, fitted(logitreg_model5))
+
+
+exp(coef(logitreg_model5))
+exp(cbind(OR = coef(logitreg_model5), confint(logitreg_model5)))
+
+```
+Interpretation: 
+0.12=the odds of being "obese" for an individual aged 47 years, chol=207 and whr=0.88.
+
+One year increase in age increases the OR of being obese by a factor of 1.04(1.02-1.06) or by 4% - controlling for cholesterol and whr.
+
+One unit increase in cholesterol increases the OR of being obese by a factor of 1.01(1.003-1.016) or by 1% (0.3%-1.6%) - controlling for cholesterol and whr.
+
+```{r}
+
+multinomreg_model1<-multinom(mydata$bmi_cat~mydata$age+mydata$gender+mydata$chol +mydata$whr+mydata$bp1s +mydata$bp1d,
+               family = "binomial")
+multinomreg_model1_test <- summary(multinomreg_model1)$coefficients/summary(multinomreg_model1)$standard.errors
+multinomreg_model1_test
+# 2-tailed z test
+multinomreg_model1_p <- (1 - pnorm(abs(multinomreg_model1_test), 0, 1)) * 2
+multinomreg_model1_p
+
+
+multinomreg_model2<-multinom(mydata$bmi_cat~mydata$age+mydata$gender+mydata$chol +mydata$whr+mydata$bp1s ,
+               family = "binomial")
+multinomreg_model2_test <- summary(multinomreg_model2)$coefficients/summary(multinomreg_model2)$standard.errors
+multinomreg_model2_test
+# 2-tailed z test
+multinomreg_model2_p <- (1 - pnorm(abs(multinomreg_model2_test), 0, 1)) * 2
+multinomreg_model2_p
+
+lrtest(multinomreg_model2,multinomreg_model1)
+
+multinomreg_model3<-multinom(mydata$bmi_cat~mydata$age+mydata$gender+mydata$chol +mydata$whr ,
+               family = "binomial")
+multinomreg_model3_test <- summary(multinomreg_model3)$coefficients/summary(multinomreg_model3)$standard.errors
+multinomreg_model3_test
+# 2-tailed z test
+multinomreg_model3_p <- (1 - pnorm(abs(multinomreg_model3_test), 0, 1)) * 2
+multinomreg_model3_p
+
+
+multinomreg_model4<-multinom(mydata$bmi_cat~ mydata$gender+mydata$chol +mydata$whr ,
+               family = "binomial")
+multinomreg_model4_test <- summary(multinomreg_model4)$coefficients/summary(multinomreg_model4)$standard.errors
+multinomreg_model4_test
+# 2-tailed z test
+multinomreg_model4_p <- (1 - pnorm(abs(multinomreg_model4_test), 0, 1)) * 2
+multinomreg_model4_p
+
+
+multinomreg_model5<-multinom(mydata$bmi_cat~ mydata$gender  +mydata$whr_center ,
+               family = "binomial")
+multinomreg_model5_test <- summary(multinomreg_model5)$coefficients/summary(multinomreg_model5)$standard.errors
+multinomreg_model5_test
+# 2-tailed z test
+multinomreg_model5_p <- (1 - pnorm(abs(multinomreg_model5_test), 0, 1)) * 2
+multinomreg_model5_p
+
+
+lrtest(multinomreg_model1,multinomreg_model2,multinomreg_model3)
+lrtest(multinomreg_model1, multinomreg_model3)
+lrtest(multinomreg_model1, multinomreg_model2)
+lrtest(multinomreg_model2, multinomreg_model3)
+
+lrtest(multinomreg_model1, multinomreg_model5)
+lrtest(multinomreg_model2, multinomreg_model5)
+lrtest(multinomreg_model3, multinomreg_model5)
+lrtest(multinomreg_model4, multinomreg_model5)
+
+exp(coef(multinomreg_model5))
+exp(confint(multinomreg_model5))
+ 
+```
+Interpretation:
+
+
+0.37= This is the relative risk ratio comparing males to females for BMI category 2 relative to BMI baseline given that the other variables in the model are held constant. For  males relative to females, the relative risk for BMI category 2 relative to BMI category 1 would be expected to be 0.37 times smaller given the other variables in the model are held constant. The p-value corresponding to this estimate is 1.025057e-03 and the 95%CI is (0.20, 0.67)
+
+2.10=This is the relative risk ratio for a 0.10 increase in whr for BMI category 2 relative to BMI category 1 given that the other variables in the model are held constant. 
+
+If a subject were to was to have a 0.10 increase in whr, the relative risk for BMI category 2 relative to BMI category 1 would be expected to increase by a factor of 2.10 given the other variables in the model are held constant.
+More generally, we can say that if a subject were to increase their whr by 0.10, they would approximately twice more likely expected to fall into BMI category 2 as compared to BMI category 1.
+
+
 Please comment on the consistency of the findings and indicate which
 outcome would you choose in practice and why (1p).
+
+The three most parsimonious (the models with the least number of parameters yet explaining the most variability in the data) models base on the indicated variables pick on different set of predictors.
+
+There might be a couple of reasons for that:
+Some important variables might be actually missing from the indicated list (presence of diabetes, hypertension, etc.) 
+The thresholds for defining the BMI binary/categorical outcomes might not be adequate.
+In general, a continuous outcome is most informative - most detailed. Creating categories based on a continuous variable may be done at the price of loosing/diluting information - hence the message may loose strength.  
+
